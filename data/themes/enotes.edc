@@ -4,7 +4,7 @@ images.image: "pin.png" COMP;
 images.image: "new.png" COMP;
 images.image: "iconify.png" COMP;
 images.image: "delete.png" COMP;
-images.image: "normal.png" COMP;
+// images.image: "normal.png" COMP;
 images.image: "shadow_right.png" COMP;
 images.image: "shadow_bottom.png" COMP;
 images.image: "shadow_corner.png" COMP;
@@ -16,7 +16,7 @@ images.image: "help.png" COMP;
 images.image: "done.png" COMP;
 images.image: "open.png" COMP;
 images.image: "status.png" COMP;
-images.image: "categories.png" COMP;
+// images.image: "categories.png" COMP;
 images.image: "close_help.png" COMP;
 
 collections {

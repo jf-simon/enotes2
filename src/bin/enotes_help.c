@@ -209,7 +209,7 @@ enotes_win_help(void* data,
 
   lb = elm_label_add(win);
   elm_label_line_wrap_set(lb, ELM_WRAP_WORD);
-  elm_object_text_set(lb, gettext("Insert important icon"));
+  elm_object_text_set(lb, gettext("Insert unordered list icon"));
   evas_object_size_hint_weight_set(lb, 0.0, 0.0);
   evas_object_size_hint_align_set(lb, EVAS_HINT_FILL, 0);
 
@@ -228,7 +228,7 @@ enotes_win_help(void* data,
 
   lb = elm_label_add(win);
   elm_label_line_wrap_set(lb, ELM_WRAP_WORD);
-  elm_object_text_set(lb, gettext("Create a new note"));
+  elm_object_text_set(lb, gettext("Create new note"));
   evas_object_size_hint_weight_set(lb, 0.0, 0.0);
   evas_object_size_hint_align_set(lb, EVAS_HINT_FILL, 0);
 

@@ -57,7 +57,6 @@ typedef struct {
 } Note;
 
 
-
 extern Eina_List *note_list;                  // list with all informations about a note, this will be store to eet and filled in starting enotes
 extern Eina_List *enotes_all_objects_list;    // list which holds a struct with the Evas_Objects of every single notes created from *note_list
 extern Eina_List *cat_list;                   // used to save the categories list from the settings

@@ -247,6 +247,7 @@ _disable_bt1(void* data,
       elm_object_disabled_set(data, EINA_FALSE);
 }
 
+
 const char*
 get_text_color(Elm_Entry* entry)
 {
@@ -2239,6 +2240,8 @@ _enotes_new()     // create a new note an fill in all default datas
          "toggle designs<br/>"
          "<item relsize=24x24 vsize=full href=done></item> &quot;F10&quot; "
          "Write backup textfile<br/>"
+         "<item relsize=24x24 vsize=full href=done></item> &quot;F12&quot; "
+         "Open Settings<br/>"
          "<item relsize=24x24 vsize=full href=done></item> &quot;ctrl + q&quot; "
          "quits enotes<br/>"
          "<item relsize=24x24 vsize=full href=done></item> &quot;crtl + m&quot; "
