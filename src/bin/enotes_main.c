@@ -21,6 +21,7 @@ Eina_List *cat_list;                   // used to save the categories list from 
 
 Eina_Bool ci_systray;
 Eina_Bool ci_border_enabled;
+Eina_Bool ci_quitpopup_check;
 const char *cat_settings;
 const char *activ_cat;
 Eina_List *cat_list_settings;
@@ -94,6 +95,7 @@ typedef struct
    Eina_List* note_list_del;
    Eina_Bool ci_systray;
    Eina_Bool ci_border_enabled;
+   Eina_Bool ci_quitpopup_check;
    
 } Note_List_Eet;
 
@@ -205,6 +207,7 @@ _my_conf_descriptor_init(void)
    MY_CONF_ADD_BASIC(dcolor_a, EET_T_INT);
    MY_CONF_ADD_BASIC(ci_systray, EET_T_UCHAR);
    MY_CONF_ADD_BASIC(ci_border_enabled, EET_T_UCHAR);
+   MY_CONF_ADD_BASIC(ci_quitpopup_check, EET_T_UCHAR);
    
    // And add the sub descriptor as a linked list at 'subs' in the main struct
    EET_DATA_DESCRIPTOR_ADD_LIST(_my_conf_descriptor,
@@ -792,6 +795,7 @@ _read_notes_eet()
    tcolor_default = my_conf->tcolor_default;
    ci_systray = my_conf->ci_systray;
    ci_border_enabled = my_conf->ci_border_enabled;
+   ci_quitpopup_check = my_conf->ci_quitpopup_check;
    
    eet_close(ef);
    eet_shutdown();
@@ -827,6 +831,7 @@ _save_notes_eet()
       my_conf->dcolor_b = dcolor_b;
       my_conf->dcolor_a = dcolor_a;
       my_conf->ci_border_enabled = ci_border_enabled;
+      my_conf->ci_quitpopup_check = ci_quitpopup_check;
       
       eet_data_write(
          ef, _my_conf_descriptor, MY_CONF_FILE_ENTRY, my_conf, EINA_TRUE);
@@ -1558,6 +1563,13 @@ _notify_block(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_
 void
 _close_notify(void* data)
 {
+
+   if(ci_quitpopup_check == EINA_TRUE)
+   {
+      _enotes_exit(NULL, NULL, NULL);
+      return;
+   }
+
    Evas_Object *notify, *bx, *bxv, *o;
    
    notify = elm_notify_add(data);

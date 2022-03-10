@@ -74,6 +74,14 @@ _systray_callback(void* data, Evas_Object* obj, void* event_info EINA_UNUSED)
 }
 
 static void
+_quitceck_callback(void* data, Evas_Object* obj, void* event_info EINA_UNUSED)
+{
+   Eina_Bool state = elm_check_state_get(obj);
+
+   ci_quitpopup_check = state;
+}
+
+static void
 _config_show_categories(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
 {
    Evas_Object *tb = data;
@@ -758,7 +766,7 @@ _open_settings(void* data,
                const char* src EINA_UNUSED)
 {
    Evas_Object *lb, *tb_settings, *hbx, *separator;
-   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *bt_add, *bt_del;
+   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *check_quitpopup_check, *bt_add, *bt_del;
    Evas_Object *all_notes_frame;
    Evas_Object *bx;
 
@@ -982,12 +990,40 @@ _open_settings(void* data,
       evas_object_size_hint_weight_set(bx, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
       evas_object_size_hint_align_set(bx, EVAS_HINT_FILL, 0.0);
 
-      lb = elm_label_add(bx);
-      elm_object_text_set(lb, gettext("Systray Icon:"));
-      //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-      evas_object_size_hint_align_set(lb, 0, 0);
-      evas_object_show(lb);
-      elm_box_pack_end(bx, lb);
+//       lb = elm_label_add(bx);
+//       elm_object_text_set(lb, gettext("Systray Icon:"));
+//       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+//       evas_object_size_hint_align_set(lb, 0, 0);
+//       evas_object_show(lb);
+//       elm_box_pack_end(bx, lb);
+
+      check_quitpopup_check = elm_check_add(bx);
+      //                   evas_object_size_hint_weight_set(quitpopup_check, EVAS_HINT_EXPAND, 0);
+      evas_object_size_hint_align_set(check_quitpopup_check, 0, 0);
+      elm_object_text_set(check_quitpopup_check, gettext("Disable quit Popup"));
+      elm_check_state_set(check_quitpopup_check, ci_quitpopup_check);
+      evas_object_show(check_quitpopup_check);
+      evas_object_smart_callback_add(check_quitpopup_check, "changed", _quitceck_callback, NULL);
+//       evas_object_data_set(tb, "quitpopup_check", quitpopup_check);
+
+      evas_object_show(check_quitpopup_check);
+      elm_box_pack_end(bx, check_quitpopup_check);
+
+      separator = elm_separator_add(bx);
+      //                   evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
+      evas_object_size_hint_align_set(separator, 0, 0);
+      elm_separator_horizontal_set(separator, EINA_TRUE);
+      evas_object_show(separator);
+      elm_box_pack_end(bx, separator);
+
+
+
+//       lb = elm_label_add(bx);
+//       elm_object_text_set(lb, gettext("Systray Icon:"));
+//       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+//       evas_object_size_hint_align_set(lb, 0, 0);
+//       evas_object_show(lb);
+//       elm_box_pack_end(bx, lb);
 
       systray_check = elm_check_add(bx);
       //                   evas_object_size_hint_weight_set(systray_check, EVAS_HINT_EXPAND, 0);
@@ -1009,12 +1045,12 @@ _open_settings(void* data,
       elm_box_pack_end(bx, separator);
 
 
-      lb = elm_label_add(bx);
-      elm_object_text_set(lb, gettext("Note Look:"));
-      //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-      evas_object_size_hint_align_set(lb, 0, 0);
-      evas_object_show(lb);
-      elm_box_pack_end(bx, lb);
+//       lb = elm_label_add(bx);
+//       elm_object_text_set(lb, gettext("Note Look:"));
+//       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+//       evas_object_size_hint_align_set(lb, 0, 0);
+//       evas_object_show(lb);
+//       elm_box_pack_end(bx, lb);
 
       check_border_enabled = elm_check_add(bx);
       //                   evas_object_size_hint_weight_set(m_check, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

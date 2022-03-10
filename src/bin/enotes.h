@@ -64,6 +64,7 @@ extern Eina_List *cat_list;                   // used to save the categories lis
 
 extern Eina_Bool ci_systray;
 extern Eina_Bool ci_border_enabled;
+extern Eina_Bool ci_quitpopup_check;
 extern const char *cat_settings;
 extern const char *activ_cat;
 extern Eina_List *cat_list_settings;
