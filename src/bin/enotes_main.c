@@ -22,6 +22,7 @@ Eina_List *cat_list;                   // used to save the categories list from 
 Eina_Bool ci_systray;
 Eina_Bool ci_border_enabled;
 Eina_Bool ci_quitpopup_check;
+int ci_default_fontsize;
 const char *cat_settings;
 const char *activ_cat;
 Eina_List *cat_list_settings;
@@ -96,6 +97,7 @@ typedef struct
    Eina_Bool ci_systray;
    Eina_Bool ci_border_enabled;
    Eina_Bool ci_quitpopup_check;
+   int ci_default_fontsize;
    
 } Note_List_Eet;
 
@@ -208,6 +210,7 @@ _my_conf_descriptor_init(void)
    MY_CONF_ADD_BASIC(ci_systray, EET_T_UCHAR);
    MY_CONF_ADD_BASIC(ci_border_enabled, EET_T_UCHAR);
    MY_CONF_ADD_BASIC(ci_quitpopup_check, EET_T_UCHAR);
+   MY_CONF_ADD_BASIC(ci_default_fontsize, EET_T_INT);
    
    // And add the sub descriptor as a linked list at 'subs' in the main struct
    EET_DATA_DESCRIPTOR_ADD_LIST(_my_conf_descriptor,
@@ -796,6 +799,7 @@ _read_notes_eet()
    ci_systray = my_conf->ci_systray;
    ci_border_enabled = my_conf->ci_border_enabled;
    ci_quitpopup_check = my_conf->ci_quitpopup_check;
+   ci_default_fontsize = my_conf->ci_default_fontsize;
    
    eet_close(ef);
    eet_shutdown();
@@ -832,6 +836,7 @@ _save_notes_eet()
       my_conf->dcolor_a = dcolor_a;
       my_conf->ci_border_enabled = ci_border_enabled;
       my_conf->ci_quitpopup_check = ci_quitpopup_check;
+      my_conf->ci_default_fontsize = ci_default_fontsize;
       
       eet_data_write(
          ef, _my_conf_descriptor, MY_CONF_FILE_ENTRY, my_conf, EINA_TRUE);
@@ -1015,6 +1020,7 @@ _textsize_change_cb_increase(void* data,
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
    int* textsize = eina_list_nth(list_text, 2);
+   Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
    
    Evas_Object* edje_obj = elm_layout_edje_get(ly);
@@ -1029,6 +1035,7 @@ _textsize_change_cb_increase(void* data,
             get_text_color(entry_notecontent),
             *textsize);
    elm_entry_text_style_user_push(entry_notecontent, buf);
+   elm_entry_text_style_user_push(entry_title, buf);
       }
 }
 
@@ -1041,6 +1048,7 @@ _textsize_change_cb_decrease(void* data,
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
    int* textsize = eina_list_nth(list_text, 2);
+   Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
    
    Evas_Object* edje_obj = elm_layout_edje_get(ly);
@@ -1055,6 +1063,7 @@ _textsize_change_cb_decrease(void* data,
             get_text_color(entry_notecontent),
             *textsize);
    elm_entry_text_style_user_push(entry_notecontent, buf);
+   elm_entry_text_style_user_push(entry_title, buf);
       }
 }
 
@@ -1067,6 +1076,7 @@ _textsize_change_cb_normal(void* data,
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
    int* textsize = eina_list_nth(list_text, 2);
+   Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
    
    Evas_Object* edje_obj = elm_layout_edje_get(ly);
@@ -1081,6 +1091,7 @@ _textsize_change_cb_normal(void* data,
             get_text_color(entry_notecontent),
             *textsize);
    elm_entry_text_style_user_push(entry_notecontent, buf);
+   elm_entry_text_style_user_push(entry_title, buf);
       }
 }
 
@@ -2307,7 +2318,7 @@ _enotes_new()     // create a new note an fill in all default datas
       defaultnote->color_a = 255;
    }
    
-   defaultnote->text_size = 11;
+   defaultnote->text_size = ci_default_fontsize;
    defaultnote->iconify = EINA_FALSE;
    defaultnote->sticky = EINA_FALSE;
    

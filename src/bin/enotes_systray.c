@@ -47,6 +47,7 @@ enotes_systray()
 {
    Evas_Object *win, *ic;
    Elm_Object_Item *it1 = NULL;
+   Elm_Object_Item *it2 = NULL;
    
 
 //    Eina_Bool init_ok = elm_need_systray();
@@ -67,7 +68,7 @@ enotes_systray()
     hide_label = eina_strbuf_new();
     
     eina_strbuf_append_printf(buf2, "%s/images/enotes_hideshow.png", elm_app_data_dir_get());
-//     printf("IMAGE %s\n", eina_strbuf_string_get(buf2));
+    printf("IMAGE %s\n", eina_strbuf_string_get(buf2));
     
 //    char buf2[PATH_MAX];
 //    snprintf(buf2, sizeof(buf2), "/usr/local/share/enotes/images/enotes_hideshow.png", elm_app_data_dir_get());
@@ -78,20 +79,20 @@ enotes_systray()
       eina_strbuf_append(hide_label, "Hide all Notes");
      
    
-   elm_menu_item_add(it, NULL, "/usr/local/share/enotes/images/enotes_hideshow.png", "Hide/Show all Notes", _hide_show_all_notes, it);
+   it2 = elm_menu_item_add(it, NULL, buf2, "Hide/Show all Notes", _hide_show_all_notes, it);
 //       it1 = elm_menu_item_add(it, NULL, NULL, eina_strbuf_string_get(hide_label), _hide_show_all_notes, it1);
       
-      ic = elm_image_add(win);
-      elm_image_file_set(ic, "/usr/local/share/enotes/images/enotes_hideshow.png", NULL);
-      evas_object_show(ic);
-      elm_object_item_part_content_set(it1, NULL, ic);
+//       ic = elm_image_add(win);
+//       elm_image_file_set(ic, "/usr/local/share/enotes/images/enotes_hideshow.png", NULL);
+//       evas_object_show(ic);
+//       elm_object_item_part_content_set(it1, NULL, ic);
 //     eina_strbuf_free(buf2);
    elm_menu_item_separator_add(it, NULL);
  
    
    elm_menu_item_separator_add(it, NULL);
    
-   elm_menu_item_add(it, NULL, "enotes", "New Note", _enotes_new, NULL); // TODO FÜR ALLE DREI: FUNKTIONS VORGABEN BEACHTEN
+   it2 = elm_menu_item_add(it, NULL, "enotes", "New Note", _enotes_new, NULL); // TODO FÜR ALLE DREI: FUNKTIONS VORGABEN BEACHTEN
    elm_menu_item_add(it, NULL, "media-eject", "Settings", _open_settings_systray, NULL);
    elm_menu_item_add(it, NULL, "help-about", "Help", enotes_win_help_systray, NULL);
    

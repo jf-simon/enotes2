@@ -25,17 +25,16 @@ _close_settings(void* data EINA_UNUSED,
    evas_object_hide(settings_win);
 }
 
-// static double
-// step_size_calculate(double min, double max)
-// {
-//    double step = 0.0;
-//    int steps = 0;
-//
-//    steps = max - min;
-//    if (steps)
-//       step = (10.0 / steps);
-//    return step;
-// }
+static double
+_step_size_calculate(double min, double max)
+{
+   double step = 0.0;
+   int steps = 0;
+
+   steps = max - min;
+   if (steps) step = (1.0 / steps);
+   return step;
+}
 
 static void
 _toggle_border(void* data, Evas_Object* obj, void* event_info EINA_UNUSED)
@@ -759,6 +758,24 @@ fill_list_in_settings1(void* data EINA_UNUSED,
    fill_list_in_settings();
 }
 
+
+static void
+_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
+{
+   double val = elm_slider_value_get(obj);
+   printf("Delay changed to %1.2f\n", val);
+
+   char buf[PATH_MAX];
+   snprintf(buf,
+            sizeof(buf),
+            "DEFAULT='font=Sans:style=Regular color=white font_size=%1.2f'",val);
+   elm_entry_text_style_user_push(data, buf);
+
+   ci_default_fontsize = (int)val;
+}
+
+
+
 void
 _open_settings(void* data,
                Evas_Object* obj EINA_UNUSED,
@@ -766,7 +783,7 @@ _open_settings(void* data,
                const char* src EINA_UNUSED)
 {
    Evas_Object *lb, *tb_settings, *hbx, *separator;
-   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *check_quitpopup_check, *bt_add, *bt_del;
+   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *check_quitpopup_check, *bt_add, *bt_del, *sl_fontsize, *en_fontpreview;
    Evas_Object *all_notes_frame;
    Evas_Object *bx;
 
@@ -983,7 +1000,7 @@ _open_settings(void* data,
        elm_object_style_set(advanced_frame, "outline");
       elm_object_text_set(advanced_frame, gettext("Advanced"));
       evas_object_size_hint_weight_set(advanced_frame, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-      evas_object_size_hint_align_set(advanced_frame, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      evas_object_size_hint_align_set(advanced_frame, EVAS_HINT_FILL, 0);
       elm_table_pack(tb_settings, advanced_frame, 1, 1, 1, 1);
 
       bx = elm_box_add(advanced_frame);
@@ -1010,20 +1027,11 @@ _open_settings(void* data,
       elm_box_pack_end(bx, check_quitpopup_check);
 
       separator = elm_separator_add(bx);
-      //                   evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
-      evas_object_size_hint_align_set(separator, 0, 0);
+      evas_object_size_hint_align_set(separator, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
       elm_separator_horizontal_set(separator, EINA_TRUE);
       evas_object_show(separator);
       elm_box_pack_end(bx, separator);
-
-
-
-//       lb = elm_label_add(bx);
-//       elm_object_text_set(lb, gettext("Systray Icon:"));
-//       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-//       evas_object_size_hint_align_set(lb, 0, 0);
-//       evas_object_show(lb);
-//       elm_box_pack_end(bx, lb);
 
       systray_check = elm_check_add(bx);
       //                   evas_object_size_hint_weight_set(systray_check, EVAS_HINT_EXPAND, 0);
@@ -1038,19 +1046,12 @@ _open_settings(void* data,
       elm_box_pack_end(bx, systray_check);
 
       separator = elm_separator_add(bx);
-      //                   evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
-      evas_object_size_hint_align_set(separator, 0, 0);
+      evas_object_size_hint_align_set(separator, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
       elm_separator_horizontal_set(separator, EINA_TRUE);
       evas_object_show(separator);
       elm_box_pack_end(bx, separator);
-
-
-//       lb = elm_label_add(bx);
-//       elm_object_text_set(lb, gettext("Note Look:"));
-//       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-//       evas_object_size_hint_align_set(lb, 0, 0);
-//       evas_object_show(lb);
-//       elm_box_pack_end(bx, lb);
+;
 
       check_border_enabled = elm_check_add(bx);
       //                   evas_object_size_hint_weight_set(m_check, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -1063,6 +1064,50 @@ _open_settings(void* data,
 
       evas_object_show(check_border_enabled);
       elm_box_pack_end(bx, check_border_enabled);
+
+      separator = elm_separator_add(bx);
+      evas_object_size_hint_align_set(separator, EVAS_HINT_FILL, EVAS_HINT_FILL);
+      evas_object_size_hint_weight_set(separator, EVAS_HINT_EXPAND, 0);
+      elm_separator_horizontal_set(separator, EINA_TRUE);
+      evas_object_show(separator);
+      elm_box_pack_end(bx, separator);
+
+      lb = elm_label_add(bx);
+      elm_object_text_set(lb, gettext("Set default text size:"));
+      //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+      evas_object_size_hint_align_set(lb, 0, 0);
+      evas_object_show(lb);
+      elm_box_pack_end(bx, lb);
+
+
+
+      en_fontpreview = elm_entry_add(bx);
+      printf("SIZE: %i\n", ci_default_fontsize);
+
+
+      sl_fontsize = elm_slider_add(bx);
+      evas_object_size_hint_align_set(sl_fontsize, EVAS_HINT_FILL, 0.5);
+      evas_object_size_hint_weight_set(sl_fontsize, EVAS_HINT_EXPAND, 0);
+      elm_slider_indicator_format_set(sl_fontsize, "%1.1f");
+      step = _step_size_calculate(0, 5);
+      elm_slider_step_set(sl_fontsize, step);
+      elm_slider_value_set(sl_fontsize, ci_default_fontsize);
+      elm_slider_min_max_set(sl_fontsize, 5, 40);
+      evas_object_smart_callback_add(sl_fontsize, "changed", _textsize_preview_cb, en_fontpreview);
+
+      evas_object_show(sl_fontsize);
+      elm_box_pack_end(bx, sl_fontsize);
+
+
+      elm_entry_editable_set(en_fontpreview, EINA_TRUE);
+      elm_entry_single_line_set(en_fontpreview, EINA_TRUE);
+      elm_object_text_set(en_fontpreview, "enotes");
+      evas_object_show(en_fontpreview);
+      elm_box_pack_end(bx, en_fontpreview);
+
+
+
+
 
       evas_object_show(bx);
 
