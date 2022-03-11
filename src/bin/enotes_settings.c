@@ -763,7 +763,6 @@ static void
 _textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
 {
    double val = elm_slider_value_get(obj);
-   printf("Delay changed to %1.2f\n", val);
 
    char buf[PATH_MAX];
    snprintf(buf,
@@ -980,7 +979,7 @@ _open_settings(void* data,
       "Have fun! <br><br>"
       "Download and updates:<br><a "
       "href=anc-02>https://github.com/jf-simon/enotes</a><br><br>"
-      "Author: Simon Tischer [jf_simon on irc.freenode.net #e.de]"));
+      "Author: Simon Tischer [jf_simon on irc.libera.chat #e.de]"));
       elm_entry_editable_set(en_help, EINA_FALSE);
       evas_object_size_hint_weight_set(
          en_help, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
