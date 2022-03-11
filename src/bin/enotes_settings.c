@@ -1072,7 +1072,11 @@ _open_settings(void* data,
       elm_box_pack_end(bx, separator);
 
       lb = elm_label_add(bx);
-      elm_object_text_set(lb, gettext("Set default text size:"));
+
+
+       char buf[PATH_MAX];
+      snprintf(buf, sizeof(buf), "Set default text size: current: %i", ci_default_fontsize);
+      elm_object_text_set(lb, gettext(buf));
       //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
       evas_object_size_hint_align_set(lb, 0, 0);
       evas_object_show(lb);
