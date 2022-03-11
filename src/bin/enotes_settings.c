@@ -1085,13 +1085,13 @@ _open_settings(void* data,
 
 
       sl_fontsize = elm_slider_add(bx);
+      elm_slider_min_max_set(sl_fontsize, 5, 40);
       evas_object_size_hint_align_set(sl_fontsize, EVAS_HINT_FILL, 0.5);
       evas_object_size_hint_weight_set(sl_fontsize, EVAS_HINT_EXPAND, 0);
       elm_slider_indicator_format_set(sl_fontsize, "%1.1f");
       step = _step_size_calculate(0, 5);
       elm_slider_step_set(sl_fontsize, step);
       elm_slider_value_set(sl_fontsize, ci_default_fontsize);
-      elm_slider_min_max_set(sl_fontsize, 5, 40);
       evas_object_smart_callback_add(sl_fontsize, "changed", _textsize_preview_cb, en_fontpreview);
 
       evas_object_show(sl_fontsize);
