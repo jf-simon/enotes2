@@ -1089,7 +1089,7 @@ _textsize_change_cb_normal(void* data,
             sizeof(buf),
             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
             get_text_color(entry_notecontent),
-            *textsize);
+            ci_default_fontsize);
    elm_entry_text_style_user_push(entry_notecontent, buf);
    elm_entry_text_style_user_push(entry_title, buf);
       }
