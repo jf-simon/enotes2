@@ -2272,7 +2272,7 @@ _enotes_new()     // create a new note an fill in all default datas
          "Have fun! <br><br>"
          "Download and updates:<br><a "
          "href=anc-02>https://github.com/jf-simon/enotes</a><br><br>"
-         "Author: Simon Tischer [jf_simon on irc.freenode.net #e.de]"));
+         "Author: Simon Tischer [jf_simon on irc.libera.chat #e.de]"));
 
       defaultnote->x = 200;
       defaultnote->y = 300;
