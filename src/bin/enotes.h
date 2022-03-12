@@ -46,7 +46,8 @@ typedef struct {
   int color_r, color_g, color_b, color_a;
   int text_color;
   const char *tcolor;
-  int text_size;
+  int notetext_size;
+  int titletext_size;
   Eina_Bool iconify;
   Eina_Bool sticky;
   const char *menu;
@@ -65,7 +66,8 @@ extern Eina_List *cat_list;                   // used to save the categories lis
 extern Eina_Bool ci_systray;
 extern Eina_Bool ci_border_enabled;
 extern Eina_Bool ci_quitpopup_check;
-extern int ci_default_fontsize;
+extern int ci_default_notefontsize;
+extern int ci_default_titlefontsize;
 extern const char *cat_settings;
 extern const char *activ_cat;
 extern Eina_List *cat_list_settings;

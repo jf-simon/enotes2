@@ -760,7 +760,7 @@ fill_list_in_settings1(void* data EINA_UNUSED,
 
 
 static void
-_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
+_note_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
 {
    double val = elm_slider_value_get(obj);
 
@@ -770,9 +770,22 @@ _textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
             "DEFAULT='font=Sans:style=Regular color=white font_size=%1.2f'",val);
    elm_entry_text_style_user_push(data, buf);
 
-   ci_default_fontsize = (int)val;
+   ci_default_notefontsize = (int)val;
 }
 
+static void
+_title_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
+{
+   double val = elm_slider_value_get(obj);
+
+   char buf[PATH_MAX];
+   snprintf(buf,
+            sizeof(buf),
+            "DEFAULT='font=Sans:style=Regular color=white font_size=%1.2f'",val);
+   elm_entry_text_style_user_push(data, buf);
+
+   ci_default_titlefontsize = (int)val;
+}
 
 
 void
@@ -782,7 +795,7 @@ _open_settings(void* data,
                const char* src EINA_UNUSED)
 {
    Evas_Object *lb, *tb_settings, *hbx, *separator;
-   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *check_quitpopup_check, *bt_add, *bt_del, *sl_fontsize, *en_fontpreview;
+   Evas_Object *advanced_frame, *help_frame, *en_help, *systray_check, *check_border_enabled, *check_quitpopup_check, *bt_add, *bt_del, *sl_fontsize, *sl_titlesize, *en_notetextpreview, *en_titletextpreview;
    Evas_Object *all_notes_frame;
    Evas_Object *bx;
 
@@ -996,7 +1009,7 @@ _open_settings(void* data,
 
       /// ADVANCED FRAME ///
       advanced_frame = elm_frame_add(win_s);
-       elm_object_style_set(advanced_frame, "outline");
+      elm_object_style_set(advanced_frame, "outline");
       elm_object_text_set(advanced_frame, gettext("Advanced"));
       evas_object_size_hint_weight_set(advanced_frame, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
       evas_object_size_hint_align_set(advanced_frame, EVAS_HINT_FILL, 0);
@@ -1071,21 +1084,30 @@ _open_settings(void* data,
       evas_object_show(separator);
       elm_box_pack_end(bx, separator);
 
+
       lb = elm_label_add(bx);
 
 
-       char buf[PATH_MAX];
-      snprintf(buf, sizeof(buf), "Set default text size: current: %i", ci_default_fontsize);
-      elm_object_text_set(lb, gettext(buf));
-      //                   evas_object_size_hint_weight_set(lb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+      elm_object_text_set(lb, gettext("Textsize:"));
       evas_object_size_hint_align_set(lb, 0, 0);
       evas_object_show(lb);
       elm_box_pack_end(bx, lb);
 
 
 
-      en_fontpreview = elm_entry_add(bx);
-      printf("SIZE: %i\n", ci_default_fontsize);
+      lb = elm_label_add(bx);
+      char buf[PATH_MAX];
+      snprintf(buf, sizeof(buf), "Set default NOTE textsize: current: %i", ci_default_notefontsize);
+      elm_object_text_set(lb, gettext(buf));
+      evas_object_size_hint_align_set(lb, 0, 0);
+      evas_object_show(lb);
+      elm_box_pack_end(bx, lb);
+
+
+
+      en_notetextpreview = elm_entry_add(bx);
+      en_titletextpreview = elm_entry_add(bx);
+      printf("SIZE: %i\n", ci_default_notefontsize);
 
 
       sl_fontsize = elm_slider_add(bx);
@@ -1095,18 +1117,47 @@ _open_settings(void* data,
       elm_slider_indicator_format_set(sl_fontsize, "%1.1f");
       step = _step_size_calculate(0, 5);
       elm_slider_step_set(sl_fontsize, step);
-      elm_slider_value_set(sl_fontsize, ci_default_fontsize);
-      evas_object_smart_callback_add(sl_fontsize, "changed", _textsize_preview_cb, en_fontpreview);
+      elm_slider_value_set(sl_fontsize, ci_default_notefontsize);
+      evas_object_smart_callback_add(sl_fontsize, "changed", _note_textsize_preview_cb, en_notetextpreview);
 
       evas_object_show(sl_fontsize);
       elm_box_pack_end(bx, sl_fontsize);
 
+      lb = elm_label_add(bx);
+      snprintf(buf, sizeof(buf), "Set default TITLE textsize: current: %i", ci_default_titlefontsize);
+      elm_object_text_set(lb, gettext(buf));
+      evas_object_size_hint_align_set(lb, 0, 0);
+      evas_object_show(lb);
+      elm_box_pack_end(bx, lb);
 
-      elm_entry_editable_set(en_fontpreview, EINA_TRUE);
-      elm_entry_single_line_set(en_fontpreview, EINA_TRUE);
-      elm_object_text_set(en_fontpreview, "enotes");
-      evas_object_show(en_fontpreview);
-      elm_box_pack_end(bx, en_fontpreview);
+      sl_titlesize = elm_slider_add(bx);
+      elm_slider_min_max_set(sl_titlesize, 5, 40);
+      evas_object_size_hint_align_set(sl_titlesize, EVAS_HINT_FILL, 0.5);
+      evas_object_size_hint_weight_set(sl_titlesize, EVAS_HINT_EXPAND, 0);
+      elm_slider_indicator_format_set(sl_titlesize, "%1.1f");
+      step = _step_size_calculate(0, 5);
+      elm_slider_step_set(sl_titlesize, step);
+      elm_slider_value_set(sl_titlesize, ci_default_titlefontsize);
+      evas_object_smart_callback_add(sl_titlesize, "changed", _title_textsize_preview_cb, en_titletextpreview);
+
+      evas_object_show(sl_titlesize);
+      elm_box_pack_end(bx, sl_titlesize);
+
+
+      _note_textsize_preview_cb(en_notetextpreview, sl_fontsize, NULL);
+      _title_textsize_preview_cb(en_titletextpreview, sl_titlesize, NULL);
+
+      elm_entry_editable_set(en_notetextpreview, EINA_TRUE);
+      elm_entry_single_line_set(en_notetextpreview, EINA_TRUE);
+      elm_object_text_set(en_notetextpreview, "Notetext");
+      evas_object_show(en_notetextpreview);
+      elm_box_pack_end(bx, en_notetextpreview);
+
+      elm_entry_editable_set(en_titletextpreview, EINA_TRUE);
+      elm_entry_single_line_set(en_titletextpreview, EINA_TRUE);
+      elm_object_text_set(en_titletextpreview, "Titeltext");
+      evas_object_show(en_titletextpreview);
+      elm_box_pack_end(bx, en_titletextpreview);
 
 
 

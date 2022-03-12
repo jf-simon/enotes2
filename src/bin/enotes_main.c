@@ -22,7 +22,10 @@ Eina_List *cat_list;                   // used to save the categories list from 
 Eina_Bool ci_systray;
 Eina_Bool ci_border_enabled;
 Eina_Bool ci_quitpopup_check;
-int ci_default_fontsize;
+int ci_default_notefontsize;
+int ci_default_titlefontsize;
+int* notetextsize;
+int* titletextsize;
 const char *cat_settings;
 const char *activ_cat;
 Eina_List *cat_list_settings;
@@ -97,7 +100,8 @@ typedef struct
    Eina_Bool ci_systray;
    Eina_Bool ci_border_enabled;
    Eina_Bool ci_quitpopup_check;
-   int ci_default_fontsize;
+   int ci_default_notefontsize;
+   int ci_default_titlefontsize;
    
 } Note_List_Eet;
 
@@ -122,7 +126,8 @@ typedef struct
    int color_r, color_g, color_b, color_a;
    int text_color;
    const char* tcolor;
-   int text_size;
+   int notetext_size;
+   int titletext_size;
    Eina_Bool iconify;
    Eina_Bool sticky;
    const char* menu;
@@ -190,7 +195,8 @@ _my_conf_descriptor_init(void)
    MY_CONF_SUB_ADD_BASIC(color_a, EET_T_INT);
    MY_CONF_SUB_ADD_BASIC(text_color, EET_T_INT);
    MY_CONF_SUB_ADD_BASIC(tcolor, EET_T_STRING);
-   MY_CONF_SUB_ADD_BASIC(text_size, EET_T_INT);
+   MY_CONF_SUB_ADD_BASIC(notetext_size, EET_T_INT);
+   MY_CONF_SUB_ADD_BASIC(titletext_size, EET_T_INT);
    MY_CONF_SUB_ADD_BASIC(iconify, EET_T_UCHAR);
    MY_CONF_SUB_ADD_BASIC(sticky, EET_T_UCHAR);
    MY_CONF_SUB_ADD_BASIC(menu, EET_T_STRING);
@@ -210,7 +216,8 @@ _my_conf_descriptor_init(void)
    MY_CONF_ADD_BASIC(ci_systray, EET_T_UCHAR);
    MY_CONF_ADD_BASIC(ci_border_enabled, EET_T_UCHAR);
    MY_CONF_ADD_BASIC(ci_quitpopup_check, EET_T_UCHAR);
-   MY_CONF_ADD_BASIC(ci_default_fontsize, EET_T_INT);
+   MY_CONF_ADD_BASIC(ci_default_notefontsize, EET_T_INT);
+   MY_CONF_ADD_BASIC(ci_default_titlefontsize, EET_T_INT);
    
    // And add the sub descriptor as a linked list at 'subs' in the main struct
    EET_DATA_DESCRIPTOR_ADD_LIST(_my_conf_descriptor,
@@ -266,6 +273,22 @@ get_text_color(Elm_Entry* entry)
    
    return split1[0];
    
+   free(split[0]);
+   free(split);
+}
+
+const char*
+get_textsize(Elm_Entry* entry)
+{
+   char **split, **split1;
+   const char* style;
+   style = elm_entry_text_style_user_peek(entry);
+
+   split = eina_str_split(style, "font_size=", 0);
+   split1 = eina_str_split(split[1], " ", 0);
+
+   return split1[0];
+
    free(split[0]);
    free(split);
 }
@@ -799,7 +822,9 @@ _read_notes_eet()
    ci_systray = my_conf->ci_systray;
    ci_border_enabled = my_conf->ci_border_enabled;
    ci_quitpopup_check = my_conf->ci_quitpopup_check;
-   ci_default_fontsize = my_conf->ci_default_fontsize;
+   ci_default_notefontsize = my_conf->ci_default_notefontsize;
+   ci_default_titlefontsize = my_conf->ci_default_titlefontsize;
+   printf("READ SIZES: %i:%i\n", ci_default_notefontsize, ci_default_titlefontsize);
    
    eet_close(ef);
    eet_shutdown();
@@ -836,7 +861,9 @@ _save_notes_eet()
       my_conf->dcolor_a = dcolor_a;
       my_conf->ci_border_enabled = ci_border_enabled;
       my_conf->ci_quitpopup_check = ci_quitpopup_check;
-      my_conf->ci_default_fontsize = ci_default_fontsize;
+      my_conf->ci_default_notefontsize = ci_default_notefontsize;
+      my_conf->ci_default_titlefontsize = ci_default_titlefontsize;
+      printf("SAVE SIZES: %i:%i\n", ci_default_notefontsize, ci_default_titlefontsize);
       
       eet_data_write(
          ef, _my_conf_descriptor, MY_CONF_FILE_ENTRY, my_conf, EINA_TRUE);
@@ -1019,22 +1046,30 @@ _textsize_change_cb_increase(void* data,
 {
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
-   int* textsize = eina_list_nth(list_text, 2);
+   int* notetextsize = eina_list_nth(list_text, 2);
    Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
+   int* titletextsize = eina_list_nth(list_text, 5);
    
    Evas_Object* edje_obj = elm_layout_edje_get(ly);
    
    if (strcmp(edje_object_part_state_get(edje_obj, "color_swallow", NULL),
       "on")) {
-      *textsize = *textsize + 1;
-   char buf[PATH_MAX];
-   snprintf(buf,
+      *notetextsize = *notetextsize + 1;
+      char buf[PATH_MAX];
+      snprintf(buf,
             sizeof(buf),
             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
             get_text_color(entry_notecontent),
-            *textsize);
-   elm_entry_text_style_user_push(entry_notecontent, buf);
+            *notetextsize);
+      elm_entry_text_style_user_push(entry_notecontent, buf);
+
+      *titletextsize = *titletextsize + 1;
+      snprintf(buf,
+            sizeof(buf),
+            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+            get_text_color(entry_notecontent),
+            *titletextsize);
    elm_entry_text_style_user_push(entry_title, buf);
       }
 }
@@ -1047,22 +1082,30 @@ _textsize_change_cb_decrease(void* data,
 {
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
-   int* textsize = eina_list_nth(list_text, 2);
+   int* notetextsize = eina_list_nth(list_text, 2);
    Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
+   int* titletextsize = eina_list_nth(list_text, 5);
    
    Evas_Object* edje_obj = elm_layout_edje_get(ly);
    
    if (strcmp(edje_object_part_state_get(edje_obj, "color_swallow", NULL),
       "on")) {
-      *textsize = *textsize - 1;
-   char buf[PATH_MAX];
-   snprintf(buf,
+      *notetextsize = *notetextsize - 1;
+      char buf[PATH_MAX];
+      snprintf(buf,
             sizeof(buf),
             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
             get_text_color(entry_notecontent),
-            *textsize);
-   elm_entry_text_style_user_push(entry_notecontent, buf);
+            *notetextsize);
+      elm_entry_text_style_user_push(entry_notecontent, buf);
+
+      *titletextsize = *titletextsize - 1;
+      snprintf(buf,
+            sizeof(buf),
+            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+            get_text_color(entry_notecontent),
+            *titletextsize);
    elm_entry_text_style_user_push(entry_title, buf);
       }
 }
@@ -1075,7 +1118,7 @@ _textsize_change_cb_normal(void* data,
 {
    Eina_List* list_text = data;
    Evas_Object* entry_notecontent = eina_list_nth(list_text, 0);
-   int* textsize = eina_list_nth(list_text, 2);
+//    int* textsize = eina_list_nth(list_text, 2);
    Evas_Object* entry_title = eina_list_nth(list_text, 3);
    Evas_Object* ly = eina_list_nth(list_text, 4);
    
@@ -1083,14 +1126,20 @@ _textsize_change_cb_normal(void* data,
    
    if (strcmp(edje_object_part_state_get(edje_obj, "color_swallow", NULL),
       "on")) {
-      *textsize = 11;
+//       *textsize = 11;
    char buf[PATH_MAX];
    snprintf(buf,
             sizeof(buf),
             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
             get_text_color(entry_notecontent),
-            ci_default_fontsize);
+            ci_default_notefontsize);
    elm_entry_text_style_user_push(entry_notecontent, buf);
+
+   snprintf(buf,
+            sizeof(buf),
+            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+            get_text_color(entry_notecontent),
+            ci_default_titlefontsize);
    elm_entry_text_style_user_push(entry_title, buf);
       }
 }
@@ -1197,6 +1246,8 @@ save_enotes_all_objects(void* data EINA_UNUSED,
             list_data2->blur = eina_stringshare_add(blur);
             list_data2->note_text =  eina_stringshare_add(elm_object_text_get(entry_notecontent));
             list_data2->note_name =  eina_stringshare_add(elm_object_text_get(entry_title));
+            list_data2->notetext_size = atoi(get_textsize(entry_notecontent));
+            list_data2->titletext_size = atoi(get_textsize(entry_title));
          }
       }
    }
@@ -2030,18 +2081,18 @@ enotes_win_setup(Note* list_data)      // create the note (Evas_Objects) and sho
    
    // create List for Evas_Objects and other "win" values
    Eina_List* list_values = NULL;
-   list_values = eina_list_append(list_values, entry_notecontent);
-   list_values = eina_list_append(list_values, cs);
-   list_values = eina_list_append(list_values, win);
-   list_values = eina_list_append(list_values, (void*)(intptr_t)list_data->id);
-   list_values = eina_list_append(list_values, entry_title);
-   list_values = eina_list_append(list_values, ly);
-   list_values = eina_list_append(list_values, &list_data->text_color);
-   list_values = eina_list_append(list_values, &list_data->text_size);
-   list_values = eina_list_append(list_values, background);
-   list_values = eina_list_append(list_values, bx);
-   list_values = eina_list_append(list_values, list_data->categories);
-   //   list_values = eina_list_append(list_values, bx1);
+   list_values = eina_list_append(list_values, entry_notecontent); //0
+   list_values = eina_list_append(list_values, cs); //1
+   list_values = eina_list_append(list_values, win); //2
+   list_values = eina_list_append(list_values, (void*)(intptr_t)list_data->id); //3
+   list_values = eina_list_append(list_values, entry_title); //4
+   list_values = eina_list_append(list_values, ly); //5
+   list_values = eina_list_append(list_values, &list_data->text_color); //6
+   list_values = eina_list_append(list_values, &list_data->notetext_size); //7
+   list_values = eina_list_append(list_values, background); //8
+   list_values = eina_list_append(list_values, bx); //9
+   list_values = eina_list_append(list_values, list_data->categories); //10
+   list_values = eina_list_append(list_values, &list_data->titletext_size); //11
    
    
    evas_object_smart_callback_add(bt1, "clicked", _bt_colorset_to_all, list_values);
@@ -2065,11 +2116,12 @@ enotes_win_setup(Note* list_data)      // create the note (Evas_Objects) and sho
    
    // create List for text size and text color
    Eina_List* list_text = NULL;
-   list_text = eina_list_append(list_text, entry_notecontent);
-   list_text = eina_list_append(list_text, list_data->tcolor);
-   list_text = eina_list_append(list_text, &list_data->text_size);
-   list_text = eina_list_append(list_text, entry_title);
-   list_text = eina_list_append(list_text, ly);
+   list_text = eina_list_append(list_text, entry_notecontent); //0
+   list_text = eina_list_append(list_text, list_data->tcolor); //1
+   list_text = eina_list_append(list_text, &list_data->notetext_size); //2
+   list_text = eina_list_append(list_text, entry_title); //3
+   list_text = eina_list_append(list_text, ly); //4
+   list_text = eina_list_append(list_text, &list_data->titletext_size); //5
    
    // CALLBACK für die Schriftgröße
    char buf_entry_notecontent[PATH_MAX];
@@ -2079,12 +2131,15 @@ enotes_win_setup(Note* list_data)      // create the note (Evas_Objects) and sho
             sizeof(buf_entry_notecontent),
             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
             list_data->tcolor,
-            list_data->text_size);
+            list_data->notetext_size);
+
+   printf("Style: %s\n", buf_entry_notecontent);
    snprintf(buf_entry_title,
             sizeof(buf_entry_title),
-            "DEFAULT='font=Sans:style=Regular color=%s font_size=16'",
-            list_data->tcolor);
-   
+            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+            list_data->tcolor,
+            list_data->titletext_size);
+   printf("Style: %s\n", buf_entry_title);
    elm_entry_text_style_user_push(entry_notecontent, buf_entry_notecontent);
    elm_entry_text_style_user_push(entry_title, buf_entry_title);
    
@@ -2126,9 +2181,10 @@ enotes_win_setup(Note* list_data)      // create the note (Evas_Objects) and sho
    color_change = eina_list_append(color_change, background);
    color_change = eina_list_append(color_change, entry_title);
    color_change = eina_list_append(color_change, entry_notecontent);
-   color_change = eina_list_append(color_change, &list_data->text_size);
+   color_change = eina_list_append(color_change, &list_data->notetext_size);
    color_change = eina_list_append(color_change, list_values);
    color_change = eina_list_append(color_change, tg);
+   color_change = eina_list_append(color_change, &list_data->titletext_size);
    
    evas_object_smart_callback_add(
       cs, "changed", _colorselector_changed_cb, color_change);
@@ -2182,7 +2238,8 @@ enotes_win_setup(Note* list_data)      // create the note (Evas_Objects) and sho
    enotes_all_objects = eina_list_append(enotes_all_objects, tg);
    enotes_all_objects = eina_list_append(enotes_all_objects, cs);
    enotes_all_objects = eina_list_append(enotes_all_objects, (void*)(intptr_t)list_data->id);
-   enotes_all_objects = eina_list_append(enotes_all_objects, &list_data->text_size);
+   enotes_all_objects = eina_list_append(enotes_all_objects, &list_data->notetext_size);
+   enotes_all_objects = eina_list_append(enotes_all_objects, &list_data->titletext_size);
    
    if(list_data->categories == NULL || !strcmp(list_data->categories, ""))
       list_data->categories = eina_stringshare_add("Default");
@@ -2318,7 +2375,8 @@ _enotes_new()     // create a new note an fill in all default datas
       defaultnote->color_a = 255;
    }
    
-   defaultnote->text_size = ci_default_fontsize;
+   defaultnote->notetext_size = ci_default_notefontsize;
+   defaultnote->titletext_size = ci_default_titlefontsize;
    defaultnote->iconify = EINA_FALSE;
    defaultnote->sticky = EINA_FALSE;
    
