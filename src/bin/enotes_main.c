@@ -1064,13 +1064,13 @@ _textsize_change_cb_increase(void* data,
             *notetextsize);
       elm_entry_text_style_user_push(entry_notecontent, buf);
 
-      *titletextsize = *titletextsize + 1;
-      snprintf(buf,
-            sizeof(buf),
-            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
-            get_text_color(entry_notecontent),
-            *titletextsize);
-   elm_entry_text_style_user_push(entry_title, buf);
+//       *titletextsize = *titletextsize + 1;
+//       snprintf(buf,
+//             sizeof(buf),
+//             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+//             get_text_color(entry_notecontent),
+//             *titletextsize);
+//    elm_entry_text_style_user_push(entry_title, buf);
       }
 }
 
@@ -1100,13 +1100,13 @@ _textsize_change_cb_decrease(void* data,
             *notetextsize);
       elm_entry_text_style_user_push(entry_notecontent, buf);
 
-      *titletextsize = *titletextsize - 1;
-      snprintf(buf,
-            sizeof(buf),
-            "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
-            get_text_color(entry_notecontent),
-            *titletextsize);
-   elm_entry_text_style_user_push(entry_title, buf);
+//       *titletextsize = *titletextsize - 1;
+//       snprintf(buf,
+//             sizeof(buf),
+//             "DEFAULT='font=Sans:style=Regular color=%s font_size=%i'",
+//             get_text_color(entry_notecontent),
+//             *titletextsize);
+//    elm_entry_text_style_user_push(entry_title, buf);
       }
 }
 
