@@ -798,12 +798,21 @@ _read_notes_eet()
    
    //     printf("home_file: %s\n", home_file);
    
+
+
+
+
+   printf("READ SIZES 2: %i:%i\n", ci_default_notefontsize, ci_default_titlefontsize);
+
    ef = eet_open(eina_strbuf_string_get(home_file), EET_FILE_MODE_READ);
    if (!ef) {
       printf("ERROR: could not open '%s' for read\n",
              eina_strbuf_string_get(home_file));
       enotes_win_help(NULL, NULL, NULL, NULL);
       clean_start = EINA_TRUE;
+      ci_default_notefontsize = 11;
+      ci_default_titlefontsize = 11;
+      ci_quitpopup_check = EINA_FALSE;
       return;
    }
    
@@ -822,9 +831,13 @@ _read_notes_eet()
    ci_systray = my_conf->ci_systray;
    ci_border_enabled = my_conf->ci_border_enabled;
    ci_quitpopup_check = my_conf->ci_quitpopup_check;
+
+   printf("READ SIZES 1: %i:%i\n", my_conf->ci_default_notefontsize, my_conf->ci_default_titlefontsize);
+   if(my_conf->ci_default_notefontsize <= 0) my_conf->ci_default_notefontsize = 11;
+   if(my_conf->ci_default_titlefontsize <= 0) my_conf->ci_default_titlefontsize = 11;
+
    ci_default_notefontsize = my_conf->ci_default_notefontsize;
    ci_default_titlefontsize = my_conf->ci_default_titlefontsize;
-   printf("READ SIZES: %i:%i\n", ci_default_notefontsize, ci_default_titlefontsize);
    
    eet_close(ef);
    eet_shutdown();
@@ -1626,7 +1639,7 @@ void
 _close_notify(void* data)
 {
 
-   if(ci_quitpopup_check == EINA_TRUE)
+   if(ci_quitpopup_check == EINA_FALSE)
    {
       _enotes_exit(NULL, NULL, NULL);
       return;
@@ -2375,8 +2388,8 @@ _enotes_new()     // create a new note an fill in all default datas
       defaultnote->color_a = 255;
    }
    
-   defaultnote->notetext_size = ci_default_notefontsize;
-   defaultnote->titletext_size = ci_default_titlefontsize;
+   defaultnote->notetext_size = 11;
+   defaultnote->titletext_size = 11;
    defaultnote->iconify = EINA_FALSE;
    defaultnote->sticky = EINA_FALSE;
    
@@ -2388,26 +2401,8 @@ _enotes_new()     // create a new note an fill in all default datas
    defaultnote->blur = eina_stringshare_add("default");  // set blue effect F2
    defaultnote->theme = eina_stringshare_add("layout1"); // set layout
 
-//    // online nessesary stuff //
-//    time_t t;
-//    struct tm* ts;
-//    t = time(NULL);
-//    ts = localtime(&t);
-//    Eina_Strbuf* newbuf;
-//    newbuf = eina_strbuf_new();
-//    eina_strbuf_append_printf(newbuf,
-//                              "enotes_%i%02i%02iT%02i%02i%02iZ",
-//                              ts->tm_year + 1900,
-//                              ts->tm_mon + 1,
-//                              ts->tm_mday,
-//                              ts->tm_hour,
-//                              ts->tm_min,
-//                              ts->tm_sec);
-//    defaultnote->Note_Sync_Data.uid = eina_stringshare_add(eina_strbuf_string_get(newbuf));
-    defaultnote->categories = eina_stringshare_add(activ_cat);
-//    defaultnote->Note_Sync_Data.online = (int*)0;
 
-//    eina_strbuf_free(newbuf);
+    defaultnote->categories = eina_stringshare_add(activ_cat);
    
    note_list = eina_list_append(note_list, defaultnote); // add note the the note_list, so it will be saved closing enotes
    

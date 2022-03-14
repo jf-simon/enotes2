@@ -771,6 +771,7 @@ _note_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_UN
    elm_entry_text_style_user_push(data, buf);
 
    ci_default_notefontsize = (int)val;
+   printf("NOTE TEXT SIZE: %1.2f\n", val);
 }
 
 static void
@@ -785,6 +786,7 @@ _title_textsize_preview_cb(void *data, Evas_Object *obj, void *event_info EINA_U
    elm_entry_text_style_user_push(data, buf);
 
    ci_default_titlefontsize = (int)val;
+   printf("TITLE TEXT SIZE: %1.2f\n", val);
 }
 
 
@@ -1029,7 +1031,7 @@ _open_settings(void* data,
       check_quitpopup_check = elm_check_add(bx);
       //                   evas_object_size_hint_weight_set(quitpopup_check, EVAS_HINT_EXPAND, 0);
       evas_object_size_hint_align_set(check_quitpopup_check, 0, 0);
-      elm_object_text_set(check_quitpopup_check, gettext("Disable quit Popup"));
+      elm_object_text_set(check_quitpopup_check, gettext("Enable quit Popup"));
       elm_check_state_set(check_quitpopup_check, ci_quitpopup_check);
       evas_object_show(check_quitpopup_check);
       evas_object_smart_callback_add(check_quitpopup_check, "changed", _quitceck_callback, NULL);
@@ -1104,7 +1106,6 @@ _open_settings(void* data,
       elm_box_pack_end(bx, lb);
 
 
-
       en_notetextpreview = elm_entry_add(bx);
       en_titletextpreview = elm_entry_add(bx);
       printf("SIZE: %i\n", ci_default_notefontsize);
@@ -1114,9 +1115,9 @@ _open_settings(void* data,
       elm_slider_min_max_set(sl_fontsize, 5, 40);
       evas_object_size_hint_align_set(sl_fontsize, EVAS_HINT_FILL, 0.5);
       evas_object_size_hint_weight_set(sl_fontsize, EVAS_HINT_EXPAND, 0);
-      elm_slider_indicator_format_set(sl_fontsize, "%1.1f");
+      elm_slider_indicator_format_set(sl_fontsize, "%1.0f");
       step = _step_size_calculate(0, 5);
-      elm_slider_step_set(sl_fontsize, step);
+      elm_slider_step_set(sl_fontsize, 0.02);
       elm_slider_value_set(sl_fontsize, ci_default_notefontsize);
       evas_object_smart_callback_add(sl_fontsize, "changed", _note_textsize_preview_cb, en_notetextpreview);
 
@@ -1134,9 +1135,9 @@ _open_settings(void* data,
       elm_slider_min_max_set(sl_titlesize, 5, 40);
       evas_object_size_hint_align_set(sl_titlesize, EVAS_HINT_FILL, 0.5);
       evas_object_size_hint_weight_set(sl_titlesize, EVAS_HINT_EXPAND, 0);
-      elm_slider_indicator_format_set(sl_titlesize, "%1.1f");
+      elm_slider_indicator_format_set(sl_titlesize, "%1.0f");
       step = _step_size_calculate(0, 5);
-      elm_slider_step_set(sl_titlesize, step);
+      elm_slider_step_set(sl_titlesize, 0.02);
       elm_slider_value_set(sl_titlesize, ci_default_titlefontsize);
       evas_object_smart_callback_add(sl_titlesize, "changed", _title_textsize_preview_cb, en_titletextpreview);
 
