@@ -71,7 +71,7 @@ collections {
     filter {
     name: "blurbackground";
       script {
-        blur({rx = 6, ry = nil, type = 'default', ox = 0, oy = 0,
+        blur({rx = 16, ry = nil, type = 'default', ox = 0, oy = 0,
               color = 'white', src = input, dst = output, count = 1})
       }
     }
@@ -238,36 +238,6 @@ collections {
         }
       }
       
-//       // CATEGORIES //
-//       part {
-//       name: "categories_icon";
-//       type: IMAGE;
-//       mouse_events: 1;
-//       scale: 1;
-//       clip_to: "clip";
-//         description {
-//             state: "default" 0.0;
-//             rel.to: "note_swallow";
-//             visible: 0;
-//             color: 255 255 255 0;
-//             rel1.relative: 0 0;
-//             rel1.offset: 0 88;
-//             rel2.relative: 0 0;
-//             rel2.offset: 20 106;
-//             image.normal: "categories.png";
-//         }
-//         description {
-//             state: "on" 0.0;
-//             rel.to: "note_swallow";
-//             color: 255 255 255 255;
-//             rel1.relative: 0 0;
-//             rel1.offset: -19 88;
-//             rel2.relative: 0 0;
-//             rel2.offset: -3 106;
-//             image.normal: "categories.png";
-//         }
-//       }
-
       // HELP ICON //
 
       part {
