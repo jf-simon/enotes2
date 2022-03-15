@@ -41,6 +41,32 @@ _ev_handler(void *data EINA_UNUSED,
 }
 
 
+void
+_switch_category_systray(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
+{
+   Note* list_data;
+   Eina_List *l;
+   Eina_List *tmp = NULL;
+
+   activ_cat = data;
+
+   EINA_LIST_FOREACH(note_list, l, list_data)
+   {
+      if((list_data->categories != NULL) && ((strcmp(list_data->categories, data) == 0) || (strcmp(list_data->categories, "") == 0)))
+      {
+         tmp = eina_list_append(tmp, (void*)(intptr_t)list_data->id);
+      }
+   }
+
+   if(eina_list_count(tmp) != 0)
+      update_visible_notes();
+   else
+      _enotes_new();
+
+   eina_list_free(tmp);
+   enotes_systray();
+}
+
 
 void
 enotes_systray()
@@ -79,7 +105,7 @@ enotes_systray()
       eina_strbuf_append(hide_label, "Hide all Notes");
      
    
-   it2 = elm_menu_item_add(it, NULL, buf2, "Hide/Show all Notes", _hide_show_all_notes, it);
+   it2 = elm_menu_item_add(it, NULL, "enotes", "Hide/Show all Notes", _hide_show_all_notes, it);
 //       it1 = elm_menu_item_add(it, NULL, NULL, eina_strbuf_string_get(hide_label), _hide_show_all_notes, it1);
       
 //       ic = elm_image_add(win);
@@ -92,7 +118,7 @@ enotes_systray()
    
    elm_menu_item_separator_add(it, NULL);
    
-   it2 = elm_menu_item_add(it, NULL, "enotes", "New Note", _enotes_new, NULL); // TODO FÜR ALLE DREI: FUNKTIONS VORGABEN BEACHTEN
+   elm_menu_item_add(it, NULL, "enotes", "New Note", _enotes_new, NULL); // TODO FÜR ALLE DREI: FUNKTIONS VORGABEN BEACHTEN
    elm_menu_item_add(it, NULL, "media-eject", "Settings", _open_settings_systray, NULL);
    elm_menu_item_add(it, NULL, "help-about", "Help", enotes_win_help_systray, NULL);
    
@@ -103,13 +129,17 @@ enotes_systray()
    new = calloc(1, sizeof(My_Conf_Type_Cat));
    char buf_cat[1024];
 
-   EINA_LIST_FOREACH(cat_list_settings, l1, new) {
-   if (!strcmp(new->cat_name, activ_cat))
-      snprintf(buf_cat, sizeof(buf_cat), "%s - current Category", new->cat_name);
-   else
-      snprintf(buf_cat, sizeof(buf_cat), "%s", new->cat_name);
-
-   elm_menu_item_add(it, NULL, NULL, buf_cat, NULL, NULL);
+   EINA_LIST_FOREACH(cat_list_settings, l1, new)
+   {
+      if (!strcmp(new->cat_name, activ_cat))
+      {
+         elm_menu_item_add(it, NULL, "enotes", new->cat_name, _switch_category_systray, new->cat_name);
+          // FIXME: systray menu needs to be updated on category switch
+         // it2 = elm_menu_item_add(it, NULL, "enotes", new->cat_name, NULL, NULL);
+         // elm_object_item_disabled_set (it2, EINA_TRUE);
+      }
+      else
+         elm_menu_item_add(it, NULL, NULL, new->cat_name, _switch_category_systray, new->cat_name);
    }
 
    elm_menu_item_separator_add(it, NULL);
@@ -119,11 +149,11 @@ enotes_systray()
    item = elm_systray_add(win);
 
    
-   char buf[1024];
+   char buf[PATH_MAX];
    snprintf(buf, sizeof(buf), "%s/images/enotes.png", elm_app_data_dir_get());
    elm_systray_icon_name_set(item, buf);
    
-   char buf1[1024];
+   char buf1[PATH_MAX];
    snprintf(buf1, sizeof(buf1), "%s/images/enotes_bw.png", elm_app_data_dir_get());
    elm_systray_att_icon_name_set(item, buf1);
    
@@ -131,6 +161,15 @@ enotes_systray()
    
    if(ci_systray == EINA_TRUE)
       elm_systray_status_set(item, 0);
+   
+   
+//    char buf[PATH_MAX];
+
+   
+//    snprintf(buf, sizeof(buf), "%s/themes/enotes.edj", elm_app_data_dir_get());
+   elm_systray_icon_theme_path_set(item, elm_app_data_dir_get());
+   
+   printf("THEME: %s\n", elm_systray_icon_theme_path_get(item));
       
 
 //    evas_object_resize(win, WIDTH, HEIGHT);

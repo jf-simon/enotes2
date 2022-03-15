@@ -387,6 +387,9 @@ _add_add_notify(void *data, Evas_Object *li EINA_UNUSED,
       catlist_to_catlisteet();
       eina_list_free(tmp);
    }
+   
+   
+   enotes_systray();
 }
 
 static void
@@ -427,6 +430,8 @@ _add_add_keydown_notify(void* data,
    {
       evas_object_del(obj);
    }
+   
+   enotes_systray();
 }
 
 static void
@@ -489,6 +494,7 @@ _block_clicked_cb(void *data, Evas_Object *obj, void *event_info EINA_UNUSED)
       evas_object_del(popup);
 
    evas_object_del(obj);
+   enotes_systray();
 }
 
 
@@ -532,6 +538,9 @@ _hoversel_clicked_move_notes_cb(void *data, Evas_Object *obj,
 
    if (popup)
       evas_object_del(popup);
+   
+   
+   enotes_systray();
 }
 
 static void
@@ -583,6 +592,8 @@ _hoversel_clicked_delete_notes_cb(void *data, Evas_Object *obj,
 
    if (popup)
       evas_object_del(popup);
+   
+   enotes_systray();
 }
 
 static void
