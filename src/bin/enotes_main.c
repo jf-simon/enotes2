@@ -977,25 +977,27 @@ static void _insert_done_icon(void *data, Evas_Object *obj EINA_UNUSED,
     select_text = elm_entry_selection_get(entry_notecontent);
     elm_entry_cursor_line_begin_set(entry_notecontent);
 
-    if (select_text != NULL) {
-      if (!strcmp(select_text,
-                  "<item relsize=24x24 vsize=full href=open></item> ")) {
-        elm_entry_entry_insert(
-            entry_notecontent,
-            "<item relsize=24x24 vsize=full href=done></item> ");
-        elm_entry_cursor_pos_set(entry_notecontent, pos);
-      } else if ((!strcmp(select_text, "")) ||
-                 (strcmp(
-                     select_text,
-                     "<item relsize=24x24 vsize=full href=done></item> "))) {
-        elm_entry_select_none(entry_notecontent);
-        elm_entry_cursor_line_begin_set(entry_notecontent);
-        elm_entry_entry_insert(
-            entry_notecontent,
-            "<item relsize=24x24 vsize=full href=done></item> ");
-        elm_entry_cursor_line_end_set(entry_notecontent);
+      if(select_text != NULL)
+      {
+         if(!strcmp(select_text, "<item relsize=24x24 vsize=full href=open></item> "))
+         {
+            elm_entry_entry_insert(entry_notecontent, "<item relsize=24x24 vsize=full href=done></item> ");
+//             elm_entry_cursor_pos_set(entry_notecontent, pos);
+         }
+         else if(!strcmp(select_text, "<item relsize=24x24 vsize=full href=done></item> "))
+         {
+            elm_entry_entry_insert(entry_notecontent, "");
+//             elm_entry_cursor_pos_set(entry_notecontent, pos);
+         }
+         else
+         {
+            elm_entry_select_none(entry_notecontent);
+            elm_entry_cursor_line_begin_set(entry_notecontent);
+            elm_entry_entry_insert(entry_notecontent, "<item relsize=24x24 vsize=full href=done></item> ");
+//             elm_entry_cursor_line_end_set(entry_notecontent);
+         }
       }
-    } else {
+     else {
       elm_entry_entry_insert(
           entry_notecontent,
           "<item relsize=24x24 vsize=full href=done></item> ");
@@ -1018,21 +1020,28 @@ _insert_open_icon(void* data,
    
    if (elm_object_focus_get(entry_notecontent)) {
       pos = elm_entry_cursor_pos_get(entry_notecontent);
+      printf("POS: %i\n", pos );
       
       elm_entry_cursor_line_begin_set(entry_notecontent);
       
       elm_entry_select_region_set(entry_notecontent, elm_entry_cursor_pos_get(entry_notecontent), elm_entry_cursor_pos_get(entry_notecontent)+2);
       select_text = elm_entry_selection_get(entry_notecontent);
       elm_entry_cursor_line_begin_set(entry_notecontent);
-      
+      printf("Sel text: \"%s\"\n", select_text);
+
       if(select_text != NULL)
       {
          if(!strcmp(select_text, "<item relsize=24x24 vsize=full href=done></item> "))
          {
             elm_entry_entry_insert(entry_notecontent, "<item relsize=24x24 vsize=full href=open></item> ");
-            elm_entry_cursor_pos_set(entry_notecontent, pos);
+//             elm_entry_cursor_pos_set(entry_notecontent, pos+2);
          }
-         else if((!strcmp(select_text, "")) || (strcmp(select_text, "<item relsize=24x24 vsize=full href=open></item> ")))
+         else if(!strcmp(select_text, "<item relsize=24x24 vsize=full href=open></item> "))
+         {
+            elm_entry_entry_insert(entry_notecontent, "");
+//             elm_entry_cursor_pos_set(entry_notecontent, pos);
+         }
+         else
          {
             elm_entry_select_none(entry_notecontent);
             elm_entry_cursor_line_begin_set(entry_notecontent);

@@ -50,6 +50,7 @@ _switch_category_systray(void *data, Evas_Object *obj EINA_UNUSED, void *event_i
 
    activ_cat = data;
 
+
    EINA_LIST_FOREACH(note_list, l, list_data)
    {
       if((list_data->categories != NULL) && ((strcmp(list_data->categories, data) == 0) || (strcmp(list_data->categories, "") == 0)))
